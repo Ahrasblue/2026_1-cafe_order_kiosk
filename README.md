@@ -45,14 +45,14 @@ flowchart LR
 python -m cafe_order_kiosk.main
 ```
 
-실행 후 `키오스크>` 프롬프트에서 명령어를 입력합니다.
+실행 후 `kiosk>` 프롬프트에서 명령어를 입력합니다.
 
 ```text
-키오스크> 메뉴
-키오스크> 주문 생성
-키오스크> 주문 추가 1 2
-키오스크> 주문 조회
-키오스크> 결제 카드
+kiosk> 메뉴
+kiosk> 주문 생성
+kiosk> 주문 추가 1 2
+kiosk> 주문 조회
+kiosk> 결제 카드
 ```
 
 ## 🧭 Commands
