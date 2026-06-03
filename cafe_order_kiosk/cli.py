@@ -3,7 +3,7 @@ from __future__ import annotations
 import shlex
 from dataclasses import dataclass
 
-from cafe_order_kiosk.models import OrderStatus
+from cafe_order_kiosk.models import OrderStatus, Order
 from cafe_order_kiosk.kiosk_store import KioskStore
 from cafe_order_kiosk.utils import format_money
 
@@ -210,6 +210,11 @@ def handle_pay(store: KioskStore, state: CLIState, args: list[str]) -> None:
 
     print(f"주문 #{order.id} 결제 완료 ({method}).")
 
+    # 영수증 출력을 위해 결제 정보가 업데이트된 최신 데이터를 불러옴
+    update = store.get_order(order.id)
+    if update:
+        printBill(update)
+
 
 def print_order(order) -> None:
     print(f"주문 #{order.id} ({format_status(order.status)})")
@@ -261,3 +266,44 @@ def format_status(status: OrderStatus) -> str:
         OrderStatus.CANCELED: "취소",
     }
     return status_map.get(status, status.value)
+
+def printBill(order: Order) -> None:
+    # 결제가 완료된 주문의 데이터를 받아 와서 영수증 양식을 통해  출력
+    print("\n==========================================")
+    print("                YU CAFE                   ")
+    print("==========================================")
+    print(f" 주문 번호 : #{order.id}")
+    
+    # 시간 가독성 좋게 하기 위해 포맷 지정
+    time = "알 수 없음"
+    if order.payment and order.payment.paid_at:
+        time = order.payment.paid_at.strftime("%Y-%m-%d %H:%M:%S")
+    elif order.paid_at:
+        time = order.paid_at.strftime("%Y-%m-%d %H:%M:%S")
+        
+    print(f" 결제 일시 : {time}")
+    if order.note:
+        print(f" 메모     : {order.note}")
+    print("------------------------------------------")
+    print(f" {'상품명':<16} | {'수량':^4} | {'금액':>10}")
+    print("------------------------------------------")
+    
+    # 주문한 메뉴 목록들을 돌면서 한 줄씩 출력
+    for item in order.items:
+        print(f" {item.name:<16} | {item.quantity:^4} | {format_money(item.line_total):>10}")
+        if item.options:
+            # 옵션이 여러 개인 경우 쉼표로 구분
+            option = ", ".join(item.options)
+            print(f"   ㄴ 옵션: {option}")
+            
+    print("------------------------------------------")
+    print(f" 합계 금액 : {format_money(order.total):>29}")
+    print("------------------------------------------")
+
+    # 결제 수단과 금액을 마지막으로 명시
+    if order.payment:
+        print(f" 결제 수단 : {order.payment.method:<10}")
+        print(f" 받은 금액 : {format_money(order.payment.amount):>29}")
+        
+    print("==========================================\n")
+
