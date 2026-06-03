@@ -42,7 +42,7 @@ flowchart LR
 키오스크 CLI를 실행합니다.
 
 ```bash
-python -m cafe_order_kiosk
+python -m cafe_order_kiosk.main
 ```
 
 실행 후 `키오스크>` 프롬프트에서 명령어를 입력합니다.
