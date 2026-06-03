@@ -85,6 +85,7 @@ pytest -q
 
 ```text
 cafe_order_kiosk/
+├─ __init__.py   # 패키지 초기화 파일 
 ├─ cli.py        # CLI 루프 및 명령 처리
 ├─ main.py       # 실행 진입점
 ├─ models.py     # 주문, 메뉴, 결제 모델
